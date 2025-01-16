@@ -1,27 +1,35 @@
-import React from 'react';
-import Navbar from './components/Navbar';
+import React, { useState } from 'react';
+import { Routes, Route } from 'react-router-dom';  // No need to import BrowserRouter here
+import Navbar from './components/Navbar'; // Navbar component
+import Home from './pages/Home'; // Home page
+import Dashboard from './pages/Dashboard'; // Dashboard page
+import Prediction from './pages/Prediction'; // Prediction page
+import Graphs from './pages/Graphs'; // Graphs page
+import Blog from './pages/Blog'; // Blog page
+import Contact from './pages/Contact'; // Contact page
 
 const App = () => {
   return (
-    <div className="app" style={{ display: 'flex', justifyContent: 'space-between', height: '100vh' }}>
-      {/* Navbar Component */}
-      <div style={{ flex: 1 }}>
-        <Navbar />
-      </div>
+    <div className="app" style={{ display: 'flex', height: '100vh' }}>
+      <Navbar /> {/* Navbar no longer requires toggling logic */}
 
-      {/* Video Player on the Right */}
-      <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end' }}>
-        <video
-          style={{ objectFit: 'cover', height: '100%' }}
-          width="100%"
-          autoPlay
-          loop
-          muted
-          controls
-        >
-          <source src="C:\Users\VRUTTIK MORAGHA\Desktop\App\Energy_Efficiency_Optimization\client\src\assets\Energy_Video.mp4" type="video/mp4" />
-          Your browser does not support the video tag.
-        </video>
+      <div
+        style={{
+          flex: '0.85',  // Fixed flex size since no toggle is needed
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          transition: 'flex 0.3s ease',
+        }}
+      >
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/prediction" element={<Prediction />} />
+          <Route path="/graphs" element={<Graphs />} />
+          <Route path="/blog" element={<Blog />} />
+          <Route path="/contact" element={<Contact />} />
+        </Routes>
       </div>
     </div>
   );

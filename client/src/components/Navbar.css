@@ -1,62 +1,65 @@
-/* styles.css */
+/* General Navbar Styling */
+.navbar {
+  background: linear-gradient(45deg, #4CAF50, #8BC34A);
+  color: white;
+  padding: 20px 20px;
+  position: fixed;
+  height: 100%;
+  width: 200px; /* Fixed width */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  z-index: 10;
+  transition: all 0.3s ease;
+}
 
-/* Navbar Styling */
-.site-navbar {
-    background-color: #333;
-    color: white;
+.nav-links {
+  padding: 0;
+  list-style-type: none;
+  margin-top: 20px;
+}
+
+.nav-link {
+  display: block;
+  padding: 15px;
+  margin: 10px 0;
+  text-decoration: none;
+  color: white;
+  font-size: 18px;
+  font-weight: 500;
+  border-radius: 5px;
+  text-align: center;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.nav-link:hover {
+  background-color: #388E3C;
+  transform: scale(1.05);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .navbar {
+    width: 250px; /* Fixed width even on mobile */
   }
-  
-  .site-logo {
-    font-weight: bold;
-    color: white;
-    text-decoration: none;
+
+  .nav-links {
+    display: none; /* Hide links by default on mobile */
+    padding-top: 50px;
   }
-  
-  .hero {
-    height: 400px;
-    background-size: cover;
-    background-position: center;
-    width: 100%;
+
+  .nav-links.show {
+    display: block; /* Show links when menu is toggled */
   }
-  
-  /* Mobile Menu */
-  .site-mobile-menu {
-    display: none;
-    position: absolute;
-    top: 0;
-    left: 0;
-    background-color: rgba(0, 0, 0, 0.8);
-    width: 100%;
-    height: 100%;
-    z-index: 10;
+}
+
+@media (max-width: 480px) {
+  .nav-link {
+    font-size: 16px;
+    padding: 10px 15px;
   }
-  
-  .site-mobile-menu .site-mobile-menu-header {
-    display: flex;
-    justify-content: flex-end;
-    padding: 20px;
-  }
-  
-  .site-mobile-menu .site-mobile-menu-body {
-    padding: 20px;
-  }
-  
-  /* Responsive Design */
-  @media (max-width: 768px) {
-    .d-none.d-lg-block {
-      display: none;
-    }
-  
-    .site-mobile-menu {
-      display: block;
-    }
-  }
-  
-  .content {
-    padding: 20px;
-  }
-  
-  h2 {
-    color: #333;
-  }
+}
+
+
+
   
