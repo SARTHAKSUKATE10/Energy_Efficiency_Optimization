@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Stack,
   Text,
@@ -21,12 +21,17 @@ const styles = mergeStyleSets({
   },
   card: {
     backgroundColor: '#333', // Dark background
-    color: '#fff',
+    color: '#ffffff',
     padding: '20px',
     borderRadius: '5px',
     width: '200px',
     textAlign: 'center',
-    marginRight: '20px', 
+    marginRight: '20px',
+    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)', // Add box shadow
+    transition: 'transform 0.2s ease-in-out', // Add transition for hover effect
+  },
+  cardHover: {
+    transform: 'scale(1.02)', // Scale up slightly on hover
   },
   chartContainer: {
     width: '45%',
@@ -38,6 +43,10 @@ const styles = mergeStyleSets({
     justifyContent: 'center', // Center the content horizontally
   },
 });
+
+const textStyles = {
+  color: '#ffffff', // Ensures text is white
+};
 
 const data = [
   { name: 'January', value: 4000 },
@@ -57,30 +66,51 @@ const data = [
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#FF4500', '#E63900', '#A333C8', '#9966FF', '#990099', '#4D2600', '#000000', '#800000'];
 
 const Dashboard = () => {
+  const [hover1, setHover1] = useState(false);
+  const [hover2, setHover2] = useState(false);
+  const [hover3, setHover3] = useState(false);
+  const [hover4, setHover4] = useState(false);
+
   return (
     <div className={styles.container}>
-      <div className={styles.mainContent}> 
+      <div className={styles.mainContent}>
         <Stack horizontal>
-          <div className={styles.card}>
-            <Text variant="large">Total Energy Consumption</Text>
-            <Text variant="xxLarge">65760 Kw/hr</Text>
+          <div 
+            className={`${styles.card} ${hover1 ? styles.cardHover : ''}`} 
+            onMouseEnter={() => setHover1(true)} 
+            onMouseLeave={() => setHover1(false)}
+          > 
+            <Text variant="large" styles={textStyles} style={{color: 'white'}}>Total Energy Consumption</Text> <br />
+            <Text variant="xxLarge" styles={textStyles} style={{color: 'white'}}>65760 Kw/hr</Text>
           </div>
-          <div className={styles.card}>
-            <Text variant="large">Total Expenditure</Text>
-            <Text variant="xxLarge">₹ 389001</Text>
+          <div 
+            className={`${styles.card} ${hover2 ? styles.cardHover : ''}`} 
+            onMouseEnter={() => setHover2(true)} 
+            onMouseLeave={() => setHover2(false)}
+          > 
+            <Text variant="large" styles={textStyles} style={{color: 'white'}}>Total Expenditure</Text> <br />
+            <Text variant="xxLarge" styles={textStyles} style={{color: 'white'}}>₹ 389001</Text>
           </div>
-          <div className={styles.card}>
-            <Text variant="large">Total Energy Consumption</Text>
-            <Text variant="xxLarge">65760 Kw/hr</Text>
+          <div 
+            className={`${styles.card} ${hover3 ? styles.cardHover : ''}`} 
+            onMouseEnter={() => setHover3(true)} 
+            onMouseLeave={() => setHover3(false)}
+          > 
+            <Text variant="large" styles={textStyles} style={{color: 'white'}}>Total Energy Consumption</Text> <br />
+            <Text variant="xxLarge" styles={textStyles} style={{color: 'white'}}>65760 Kw/hr</Text>
           </div>
-          <div className={styles.card}>
-            <Text variant="large">Total Expenditure</Text>
-            <Text variant="xxLarge">₹ 389001</Text>
+          <div 
+            className={`${styles.card} ${hover4 ? styles.cardHover : ''}`} 
+            onMouseEnter={() => setHover4(true)} 
+            onMouseLeave={() => setHover4(false)}
+          > 
+            <Text variant="large" styles={textStyles} style={{color: 'white'}}>Total Expenditure</Text> <br />
+            <Text variant="xxLarge" styles={textStyles} style={{color: 'white'}}>₹ 389001</Text>
           </div>
         </Stack>
       </div>
 
-      <div className={styles.mainContent}> 
+      <div className={styles.mainContent}>
         <Stack horizontal>
           <div className={styles.chartContainer}>
             <ResponsiveContainer width="100%" height="100%">
@@ -90,7 +120,7 @@ const Dashboard = () => {
                 <YAxis />
                 <Tooltip />
                 <Legend />
-                <Bar dataKey="value" fill="#8884d8" /> 
+                <Bar dataKey="value" fill="#8884d8" />
               </BarChart>
             </ResponsiveContainer>
             <Text variant="medium" style={{ textAlign: 'center', marginTop: '10px' }}>Yearly Energy Consumption</Text>
@@ -123,3 +153,4 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+

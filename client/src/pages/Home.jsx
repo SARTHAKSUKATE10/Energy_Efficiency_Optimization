@@ -35,7 +35,7 @@ const Home = ({ isMenuVisible }) => {
         style={{
           zIndex: 1,
           position: 'relative', // Ensures text is on top of image
-          color: 'white',
+          color: 'orange',
           textAlign: 'center', // Center text horizontally
           padding: '20px', // Add some padding for better visibility
           marginLeft: '20%', // Center text vertically
