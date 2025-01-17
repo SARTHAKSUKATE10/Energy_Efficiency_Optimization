@@ -6,6 +6,7 @@ import {
   Link,
   mergeStyleSets,
 } from '@fluentui/react';
+import axios from 'axios';
 
 const styles = mergeStyleSets({
   container: {
@@ -17,12 +18,11 @@ const styles = mergeStyleSets({
     height: '100%',
     marginLeft: '40%',
     marginTop: '5%',
-    // Remove float for better layout
   },
   title: {
     fontSize: '34px',
     fontWeight: 'bold',
-    marginBottom: '30px', // Increased margin for better spacing
+    marginBottom: '30px',
     textAlign: 'center', 
   },
   inputContainer: {
@@ -56,24 +56,23 @@ const styles = mergeStyleSets({
 
 const Prediction = () => {
   const [startDate, setStartDate] = useState('');
-  const [startTime, setStartTime] = useState('');
   const [endDate, setEndDate] = useState('');
-  const [endTime, setEndTime] = useState('');
   const [predictionData, setPredictionData] = useState([]);
 
-  const handlePredict = () => {
-    // Simulate prediction logic (replace with actual prediction function)
-    const simulatedData = [
-      { date: '2020-05-07', energy: 52507 },
-      { date: '2020-05-08', energy: 7820.27 },
-      { date: '2020-05-09', energy: 4700.14 },
-    ];
-
-    setPredictionData(simulatedData);
+  const handlePredict = async () => {
+    try {
+      const response = await axios.post('http://localhost:5000/prediction', {
+        startDate,
+        endDate
+      });
+      setPredictionData(response.data.details);
+    } catch (error) {
+      console.error('Error fetching prediction data:', error);
+    }
   };
 
   const calculateTotal = () => {
-    return predictionData.reduce((total, item) => total + item.energy, 0);
+    return predictionData.reduce((total, item) => total + item['Total Usage (kWh)'], 0);
   };
 
   return (
@@ -92,13 +91,6 @@ const Prediction = () => {
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
             />
-            <TextField
-              label="Time"
-              type="time"
-              className={styles.input}
-              value={startTime}
-              onChange={(e) => setStartTime(e.target.value)}
-            />
           </div>
           <div>
             <TextField
@@ -107,13 +99,6 @@ const Prediction = () => {
               className={styles.input}
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
-            />
-            <TextField
-              label="Time"
-              type="time"
-              className={styles.input}
-              value={endTime}
-              onChange={(e) => setEndTime(e.target.value)}
             />
           </div>
         </div>
@@ -127,14 +112,14 @@ const Prediction = () => {
             <thead>
               <tr className={styles.tableHeader}>
                 <th className={styles.tableCell}>Date</th>
-                <th className={styles.tableCell}>Energy (kWh)</th>
+                <th className={styles.tableCell}>Total Usage (kWh)</th>
               </tr>
             </thead>
             <tbody>
               {predictionData.map((row) => (
-                <tr key={row.date}>
-                  <td className={styles.tableCell}>{row.date}</td>
-                  <td className={styles.tableCell}>{row.energy}</td>
+                <tr key={row.Date}>
+                  <td className={styles.tableCell}>{row.Date}</td>
+                  <td className={styles.tableCell}>{row['Total Usage (kWh)']}</td>
                 </tr>
               ))}
             </tbody>

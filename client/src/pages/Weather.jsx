@@ -9,7 +9,7 @@ const Weather = () => {
   useEffect(() => {
     const fetchWeatherData = async () => {
       try {
-        const response = await axios.post('http://localhost:3000/weather', { 
+        const response = await axios.post('http://localhost:5000/weather', { 
           // Adjust URL if necessary
           tempmax: 35.0,
           tempmin: 25.0,
