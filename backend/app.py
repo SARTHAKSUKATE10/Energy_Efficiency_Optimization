@@ -1,32 +1,52 @@
+# Import necessary libraries
 from flask import Flask, request, jsonify
+import joblib
 import numpy as np
 import pandas as pd
-from sklearn.preprocessing import StandardScaler
-from sklearn.ensemble import RandomForestRegressor
 
-# Assuming model is trained and saved
-model = RandomForestRegressor()
-model.load('random_forest_model.pkl')  # Update with your actual model file path
-
-scaler = StandardScaler()
-
+# Initialize Flask app
 app = Flask(__name__)
 
-@app.route('/prediction', methods=['POST'])
+# Load the trained model and scaler
+model_filename = 'random_forest_model.pkl'
+scaler_filename = 'scaler.pkl'
+
+# Load model and scaler using joblib
+model = joblib.load(model_filename)
+scaler = joblib.load(scaler_filename)
+
+@app.route('/')
+def home():
+    return "Welcome to the Energy Efficiency Prediction API!"
+
+@app.route('/predict', methods=['POST'])
 def predict():
-    # Get input features from request
-    features = request.json
+    try:
+        # Get the input data from the request (JSON format)
+        data = request.get_json()
 
-    # Convert features to numpy array and scale
-    input_array = np.array(list(features.values())).reshape(1, -1)
-    input_scaled = scaler.transform(input_array)
+        # Extract the features from the input data
+        input_data = data['features']  # Ensure 'features' is a list of values
+        
+        # Convert input data to a numpy array and scale using the saved scaler
+        input_array = np.array(input_data).reshape(1, -1)
+        scaled_input = scaler.transform(input_array)
 
-    # Make prediction
-    prediction = model.predict(input_scaled)
-
-    # Return the prediction as a JSON response
-    return jsonify({'prediction': prediction[0]})
+        # Predict using the trained Random Forest model
+        prediction = model.predict(scaled_input)
+        
+        # Send the prediction as a response
+        response = {
+            'prediction': prediction.tolist()  # Convert numpy array to list for JSON response
+        }
+        return jsonify(response)
+    
+    except Exception as e:
+        # Handle any errors that occur during prediction
+        return jsonify({'error': str(e)})
 
 if __name__ == '__main__':
+    # Run the app on the local server
     app.run(debug=True)
+
 
