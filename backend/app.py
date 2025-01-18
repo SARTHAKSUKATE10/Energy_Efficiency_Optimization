@@ -1,68 +1,32 @@
 from flask import Flask, request, jsonify
-import joblib
+import numpy as np
 import pandas as pd
-from datetime import datetime
-from flask_cors import CORS
+from sklearn.preprocessing import StandardScaler
+from sklearn.ensemble import RandomForestRegressor
+
+# Assuming model is trained and saved
+model = RandomForestRegressor()
+model.load('random_forest_model.pkl')  # Update with your actual model file path
+
+scaler = StandardScaler()
 
 app = Flask(__name__)
-CORS(app)  # Allow cross-origin requests
-
-# Load the weather model
-weather_model = joblib.load('weather_model.pkl')
-
-# Load the energy usage model
-energy_usage_model = joblib.load('energy_usage_model.pkl')
-
-# Load the energy usage dataset
-energy_df = pd.read_csv(r'C:\\Users\\VRUTTIK MORAGHA\\Desktop\\App\\Energy_Efficiency_Optimization\\sectorwiseMerged.csv')
-
-@app.route('/weather', methods=['POST'])
-def predict_weather():
-    try:
-        data = request.get_json()
-        input_data = {
-            'year': datetime.now().year,
-            'month': datetime.now().month,
-            'day': datetime.now().day,
-            'tempmax': data['tempmax'],
-            'tempmin': data['tempmin'],
-            'humidity': data['humidity'],
-            'windspeed': data['windspeed']
-        }
-        input_df = pd.DataFrame([input_data])
-        prediction = weather_model.predict(input_df)
-        result = {
-            'temp': prediction[0],
-            'humidity': input_data['humidity'],
-            'windspeed': input_data['windspeed']
-        }
-        return jsonify(result), 200  # Return 200 OK status code
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500  # Return 500 Internal Server Error
 
 @app.route('/prediction', methods=['POST'])
-def predict_energy_usage():
-    try:
-        data = request.get_json()
-        start_date = data['startDate']
-        end_date = data['endDate']
+def predict():
+    # Get input features from request
+    features = request.json
 
-        # Filter the data based on the date range
-        mask = (energy_df['Date'] >= start_date) & (energy_df['Date'] <= end_date)
-        filtered_df = energy_df.loc[mask]
+    # Convert features to numpy array and scale
+    input_array = np.array(list(features.values())).reshape(1, -1)
+    input_scaled = scaler.transform(input_array)
 
-        # Calculate the total energy usage
-        total_energy = filtered_df['Total Usage (kWh)'].sum()
+    # Make prediction
+    prediction = model.predict(input_scaled)
 
-        # Prepare the result
-        result = {
-            'total_energy': total_energy,
-            'details': filtered_df[['Date', 'Total Usage (kWh)']].to_dict(orient='records')
-        }
-
-        return jsonify(result), 200  # Return 200 OK status code
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500  # Return 500 Internal Server Error
+    # Return the prediction as a JSON response
+    return jsonify({'prediction': prediction[0]})
 
 if __name__ == '__main__':
-    app.run(port=5000, debug=True)  # Use port 5000 for Flask
+    app.run(debug=True)
+
