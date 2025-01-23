@@ -1,13 +1,6 @@
 import React, { useState } from 'react';
-import {
-  Stack,
-  Text,
-  mergeStyleSets,
-} from '@fluentui/react';
-import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
-  PieChart, Pie, Sector, Cell,
-} from 'recharts';
+import axios from 'axios';
+import { Stack, Text, PrimaryButton, mergeStyleSets } from '@fluentui/react';
 
 const styles = mergeStyleSets({
   container: {
@@ -15,138 +8,120 @@ const styles = mergeStyleSets({
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    height: '100vh', // Adjust height as needed
-    width: '100%', // Adjust width as needed
-    marginLeft: '40%',
-  },
-  card: {
-    backgroundColor: '#333', // Dark background
-    color: '#ffffff',
-    padding: '20px',
-    borderRadius: '5px',
-    width: '200px',
-    textAlign: 'center',
-    marginRight: '20px',
-    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)', // Add box shadow
-    transition: 'transform 0.2s ease-in-out', // Add transition for hover effect
-  },
-  cardHover: {
-    transform: 'scale(1.02)', // Scale up slightly on hover
+    marginTop: '50px',
   },
   chartContainer: {
-    width: '45%',
-    height: 300,
     margin: '20px',
+    textAlign: 'center',
   },
-  mainContent: {
-    display: 'flex',
-    justifyContent: 'center', // Center the content horizontally
+  image: {
+    width: '80%',
+    maxWidth: '600px',
+    height: 'auto',
+    marginBottom: '20px',
+  },
+  inputContainer: {
+    marginBottom: '20px',
   },
 });
 
-const textStyles = {
-  color: '#ffffff', // Ensures text is white
-};
-
-const data = [
-  { name: 'January', value: 4000 },
-  { name: 'February', value: 3000 },
-  { name: 'March', value: 2000 },
-  { name: 'April', value: 2780 },
-  { name: 'May', value: 1890 },
-  { name: 'June', value: 2390 },
-  { name: 'July', value: 3490 },
-  { name: 'August', value: 3100 },
-  { name: 'September', value: 2800 },
-  { name: 'October', value: 3900 },
-  { name: 'November', value: 3100 },
-  { name: 'December', value: 3200 },
-];
-
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#FF4500', '#E63900', '#A333C8', '#9966FF', '#990099', '#4D2600', '#000000', '#800000'];
-
 const Dashboard = () => {
-  const [hover1, setHover1] = useState(false);
-  const [hover2, setHover2] = useState(false);
-  const [hover3, setHover3] = useState(false);
-  const [hover4, setHover4] = useState(false);
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [graphs, setGraphs] = useState({
+    energy_consumption_graph: '',
+    expenditure_graph: '',
+    pie_chart: ''
+  });
+  const [error, setError] = useState('');
+
+  const handleDateChange = (event, setter) => {
+    setter(event.target.value);
+  };
+
+  const fetchData = async () => {
+    if (!startDate || !endDate) {
+      setError('Please provide both start and end dates.');
+      return;
+    }
+
+    try {
+      const response = await axios.post('http://localhost:5000/dashboard', {
+        start_date: startDate,
+        end_date: endDate,
+      });
+
+      if (response.data.error) {
+        setError(response.data.error);
+        setGraphs({ energy_consumption_graph: '', expenditure_graph: '', pie_chart: '' });
+      } else {
+        setGraphs({
+          energy_consumption_graph: response.data.energy_consumption_graph,
+          expenditure_graph: response.data.expenditure_graph,
+          pie_chart: response.data.pie_chart
+        });
+        setError('');
+      }
+    } catch (err) {
+      setError('An error occurred while fetching data.');
+    }
+  };
 
   return (
     <div className={styles.container}>
-      <div className={styles.mainContent}>
-        <Stack horizontal>
-          <div 
-            className={`${styles.card} ${hover1 ? styles.cardHover : ''}`} 
-            onMouseEnter={() => setHover1(true)} 
-            onMouseLeave={() => setHover1(false)}
-          > 
-            <Text variant="large" styles={textStyles} style={{color: 'white'}}>Total Energy Consumption</Text> <br />
-            <Text variant="xxLarge" styles={textStyles} style={{color: 'white'}}>65760 Kw/hr</Text>
-          </div>
-          <div 
-            className={`${styles.card} ${hover2 ? styles.cardHover : ''}`} 
-            onMouseEnter={() => setHover2(true)} 
-            onMouseLeave={() => setHover2(false)}
-          > 
-            <Text variant="large" styles={textStyles} style={{color: 'white'}}>Total Expenditure</Text> <br />
-            <Text variant="xxLarge" styles={textStyles} style={{color: 'white'}}>₹ 389001</Text>
-          </div>
-          <div 
-            className={`${styles.card} ${hover3 ? styles.cardHover : ''}`} 
-            onMouseEnter={() => setHover3(true)} 
-            onMouseLeave={() => setHover3(false)}
-          > 
-            <Text variant="large" styles={textStyles} style={{color: 'white'}}>Total Energy Consumption</Text> <br />
-            <Text variant="xxLarge" styles={textStyles} style={{color: 'white'}}>65760 Kw/hr</Text>
-          </div>
-          <div 
-            className={`${styles.card} ${hover4 ? styles.cardHover : ''}`} 
-            onMouseEnter={() => setHover4(true)} 
-            onMouseLeave={() => setHover4(false)}
-          > 
-            <Text variant="large" styles={textStyles} style={{color: 'white'}}>Total Expenditure</Text> <br />
-            <Text variant="xxLarge" styles={textStyles} style={{color: 'white'}}>₹ 389001</Text>
-          </div>
-        </Stack>
+      <div className={styles.inputContainer}>
+        <label htmlFor="startDate">Start Date: </label>
+        <input
+          type="date"
+          id="startDate"
+          value={startDate}
+          onChange={(e) => handleDateChange(e, setStartDate)}
+        />
+        <label htmlFor="endDate">End Date: </label>
+        <input
+          type="date"
+          id="endDate"
+          value={endDate}
+          onChange={(e) => handleDateChange(e, setEndDate)}
+        />
+        <PrimaryButton text="Fetch Data" onClick={fetchData} />
       </div>
 
-      <div className={styles.mainContent}>
-        <Stack horizontal>
-          <div className={styles.chartContainer}>
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart width={730} height={250} data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="value" fill="#8884d8" />
-              </BarChart>
-            </ResponsiveContainer>
-            <Text variant="medium" style={{ textAlign: 'center', marginTop: '10px' }}>Yearly Energy Consumption</Text>
+      {error && <Text variant="large" style={{ color: 'red' }}>{error}</Text>}
+
+      <div className={styles.chartContainer}>
+        {graphs.energy_consumption_graph && (
+          <div>
+            <h3>Yearly Energy Consumption</h3>
+            <img
+              src={`data:image/png;base64,${graphs.energy_consumption_graph}`}
+              alt="Yearly Energy Consumption"
+              className={styles.image}
+            />
           </div>
-          <div className={styles.chartContainer}>
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart width={400} height={400}>
-                <Pie
-                  data={data}
-                  dataKey="value"
-                  nameKey="name"
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={80}
-                  label
-                >
-                  {data.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
-            <Text variant="medium" style={{ textAlign: 'center', marginTop: '10px' }}>Yearly Expenditure</Text>
+        )}
+
+        {graphs.expenditure_graph && (
+          <div>
+            <h3>Yearly Expenditure</h3>
+            <img
+              src={`data:image/png;base64,${graphs.expenditure_graph}`}
+              alt="Yearly Expenditure"
+              className={styles.image}
+            />
           </div>
-        </Stack>
+        )}
+
+        {graphs.pie_chart && (
+          <div>
+            <h3>Energy Usage Distribution</h3>
+            <img
+              src={`data:image/png;base64,${graphs.pie_chart}`}
+              alt="Energy Usage Distribution"
+              className={styles.image}
+            />
+          </div>
+        )}
       </div>
     </div>
   );

@@ -2,6 +2,9 @@ from flask import Flask, request, jsonify
 import joblib
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
+import io
+import base64
 from flask_cors import CORS  # Add CORS support
 
 # Initialize Flask app
@@ -10,7 +13,7 @@ app = Flask(__name__)
 # Enable CORS to allow communication between different origins (React on 3000, Flask on 5000)
 CORS(app)
 
-# Load the trained model and scaler for weather prediction
+# Load the trained model and scaler for sector data
 model = joblib.load('random_forest_model.pkl')
 scaler = joblib.load('scaler.pkl')
 le_conditions = joblib.load('label_encoder.pkl')  # Label encoder for conditions
@@ -63,7 +66,7 @@ def predict_weather():
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-    
+        
 
 @app.route('/sector', methods=['POST'])
 def get_sector_data():
@@ -102,6 +105,106 @@ def get_sector_data():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+
+# Function to generate line graph for Yearly Energy Consumption
+def generate_yearly_energy_consumption_graph(filtered_data):
+    # Group data by year
+    filtered_data['Year'] = pd.to_datetime(filtered_data['Date']).dt.year
+    yearly_data = filtered_data.groupby('Year').agg({
+        'Total Usage (kWh)': 'sum'
+    }).reset_index()
+
+    # Plot the line graph for Energy Consumption
+    fig, ax = plt.subplots(figsize=(10, 6))
+    ax.plot(yearly_data['Year'], yearly_data['Total Usage (kWh)'], label='Yearly Energy Consumption (kWh)', color='blue', marker='o')
+    ax.set_xlabel('Year')
+    ax.set_ylabel('kWh')
+    ax.set_title('Yearly Energy Consumption')
+    ax.legend()
+
+    # Save the plot as an image
+    img = io.BytesIO()
+    plt.savefig(img, format='png')
+    img.seek(0)
+    img_base64 = base64.b64encode(img.getvalue()).decode('utf-8')
+
+    return img_base64
+
+# Function to generate line graph for Yearly Expenditure
+def generate_yearly_expenditure_graph(filtered_data):
+    # Group data by year
+    filtered_data['Year'] = pd.to_datetime(filtered_data['Date']).dt.year
+    yearly_data = filtered_data.groupby('Year').agg({
+        'Total Usage (kWh)': 'sum'
+    }).reset_index()
+
+    # Plot the line graph for Expenditure
+    fig, ax = plt.subplots(figsize=(10, 6))
+    ax.plot(yearly_data['Year'], yearly_data['Total Usage (kWh)'] * 0.1, label='Yearly Expenditure', color='red', marker='o')
+    ax.set_xlabel('Year')
+    ax.set_ylabel('Expenditure (in USD)')
+    ax.set_title('Yearly Expenditure (Estimated)')
+    ax.legend()
+
+    # Save the plot as an image
+    img = io.BytesIO()
+    plt.savefig(img, format='png')
+    img.seek(0)
+    img_base64 = base64.b64encode(img.getvalue()).decode('utf-8')
+
+    return img_base64
+
+# Function to generate pie chart for Energy Usage Distribution
+def generate_pie_chart(filtered_data):
+    # Group data by urban/rural usage
+    grouped_data = filtered_data.groupby(['Urban/Rural']).agg({
+        'Total Usage (kWh)': 'sum'
+    }).reset_index()
+
+    # Generate pie chart
+    fig, ax = plt.subplots(figsize=(6, 6))
+    ax.pie(grouped_data['Total Usage (kWh)'], labels=grouped_data['Urban/Rural'], autopct='%1.1f%%', colors=['#ff9999','#66b3ff','#99ff99','#ffcc99'])
+    ax.set_title('Energy Usage Distribution: Urban vs Rural')
+
+    # Save the plot as an image
+    img = io.BytesIO()
+    plt.savefig(img, format='png')
+    img.seek(0)
+    img_base64 = base64.b64encode(img.getvalue()).decode('utf-8')
+
+    return img_base64
+
+@app.route('/dashboard', methods=['POST'])
+def dashboard():
+    try:
+        # Get data from frontend
+        data = request.get_json()
+        start_date = pd.to_datetime(data['start_date'])
+        end_date = pd.to_datetime(data['end_date'])
+
+        # Filter the data based on the date range
+        filtered_data = df[(df['Date'] >= start_date) & (df['Date'] <= end_date)]
+
+        if filtered_data.empty:
+            return jsonify({'error': 'No data found for the selected date range.'}), 404
+
+        # Generate graphs
+        energy_consumption_graph = generate_yearly_energy_consumption_graph(filtered_data)
+        expenditure_graph = generate_yearly_expenditure_graph(filtered_data)
+        pie_chart = generate_pie_chart(filtered_data)
+
+        # Return graphs in base64 encoding
+        return jsonify({
+            'energy_consumption_graph': energy_consumption_graph,
+            'expenditure_graph': expenditure_graph,
+            'pie_chart': pie_chart
+        })
+    except Exception as e:
+        return jsonify({'error': f'Error: {str(e)}'}), 500
+
+
+# Run the Flask application
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
+
 
