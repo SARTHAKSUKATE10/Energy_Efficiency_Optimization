@@ -3,6 +3,7 @@ import { Routes, Route } from 'react-router-dom';  // No need to import BrowserR
 import Navbar from './components/Navbar'; // Navbar component
 import Home from './pages/Home'; // Home page
 import Dashboard from './pages/Dashboard'; // Dashboard page
+import Sector from './pages/Sector';
 import Prediction from './pages/Prediction'; // Prediction page
 import Graphs from './pages/Graphs'; // Graphs page
 import Weather from './pages/Weather'; // Weather page
@@ -26,6 +27,7 @@ const App = () => {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/sector" element={<Sector />} />
           <Route path="/prediction" element={<Prediction />} />
           <Route path="/graphs" element={<Graphs />} />
           <Route path="/weather" element={<Weather />} />
