@@ -7,7 +7,7 @@ import Sector from './pages/Sector';
 import Prediction from './pages/Prediction'; // Prediction page
 import Graphs from './pages/Graphs'; // Graphs page
 import Weather from './pages/Weather'; // Weather page
-import Blog from './pages/Blog'; // Blog page
+import About from './pages/About'; // Blog page
 import Contact from './pages/Contact'; // Contact page
 
 const App = () => {
@@ -31,7 +31,7 @@ const App = () => {
           <Route path="/prediction" element={<Prediction />} />
           <Route path="/graphs" element={<Graphs />} />
           <Route path="/weather" element={<Weather />} />
-          <Route path="/blog" element={<Blog />} />
+          <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
         </Routes>
       </div>

@@ -33,7 +33,7 @@
 }
 
 .nav-link:hover {
-  background-color: #388E3C;
+    background-color: #007bff;
   transform: scale(1.05);
 }
 
