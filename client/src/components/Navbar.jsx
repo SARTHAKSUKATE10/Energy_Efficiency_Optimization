@@ -16,12 +16,6 @@ const Navbar = () => {
           <Link to="/sector" className="nav-link">SectorWise</Link>
         </li>
         <li>
-          <Link to="/prediction" className="nav-link">Prediction</Link>
-        </li>
-        <li>
-          <Link to="/graphs" className="nav-link">Graphs</Link>
-        </li>
-        <li>
           <Link to="/weather" className="nav-link">Weather</Link>
         </li>
         <li>

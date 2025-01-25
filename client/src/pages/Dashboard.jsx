@@ -1,7 +1,20 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { PrimaryButton, Text } from '@fluentui/react';
+import { FaChartBar, FaSpinner, FaExclamationTriangle } from 'react-icons/fa';
 import './Dashboard.css';
+
+const DashboardCard = ({ title, image, alt }) => (
+  <div className="graph-card">
+    <strong>{title}</strong>
+    <div className="graph-wrapper">
+      <img 
+        src={`data:image/png;base64,${image}`} 
+        alt={alt}
+        className="graph-image"
+      />
+    </div>
+  </div>
+);
 
 const Dashboard = () => {
   const [startDate, setStartDate] = useState('');
@@ -14,17 +27,12 @@ const Dashboard = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleDateChange = (event, setter) => {
-    setter(event.target.value);
-  };
-
   const fetchData = async () => {
     if (!startDate || !endDate) {
       setError('Please provide both start and end dates.');
       return;
     }
 
-    console.log('Fetching data with dates:', { startDate, endDate });
     setLoading(true);
     setError('');
 
@@ -38,8 +46,6 @@ const Dashboard = () => {
         }
       });
 
-      console.log('Server response:', response.data);
-
       if (response.data.error) {
         throw new Error(response.data.error);
       }
@@ -52,97 +58,97 @@ const Dashboard = () => {
 
     } catch (err) {
       console.error('Error details:', err);
-      setError(err.response?.data?.error || err.message || 'Error fetching data. Please try again.');
+      const errorMessage = err.response?.data?.error || err.message || 'Error fetching data. Please try again.';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="dashboardContainer">
-      {/* Fixed header section */}
-      <div className="headerSection">
-        <h1 className="dashboardTitle">Energy Sector Data Dashboard</h1>
-        
-        {/* Input controls section */}
-        <div className="controlsSection">
-          <div className="dateInputs">
-            <div className="inputGroup">
-              <label htmlFor="startDate">Start Date:</label>
-              <input
-                id="startDate"
-                type="date"
-                value={startDate}
-                onChange={(event) => handleDateChange(event, setStartDate)}
-                className="dateInput"
-                min="2018-01-01"
-                max="2019-12-31"
-              />
+    <div className="container1">
+      <img
+        className="background-image"
+        src="https://images.unsplash.com/photo-1516737490857-847eca281a42?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
+        alt="Dashboard Background"
+      />
+      <div className="content-overlay">
+        <div className="dashboard-card">
+          <h1><FaChartBar style={{ marginRight: '10px' }} />Energy Dashboard</h1>
+          
+          <div className="dashboard-form">
+            <div className="date-inputs">
+              <div className="input-group">
+                <label htmlFor="startDate">Start Date</label>
+                <input
+                  id="startDate"
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  min="2018-01-01"
+                  max="2019-12-31"
+                />
+              </div>
+              <div className="input-group">
+                <label htmlFor="endDate">End Date</label>
+                <input
+                  id="endDate"
+                  type="date"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  min="2018-01-01"
+                  max="2019-12-31"
+                />
+              </div>
+              <button 
+                onClick={fetchData} 
+                disabled={loading || !startDate || !endDate}
+              >
+                {loading ? 'Fetching...' : 'Get Data'}
+              </button>
             </div>
-            <div className="inputGroup">
-              <label htmlFor="endDate">End Date:</label>
-              <input
-                id="endDate"
-                type="date"
-                value={endDate}
-                onChange={(event) => handleDateChange(event, setEndDate)}
-                className="dateInput"
-                min="2018-01-01"
-                max="2019-12-31"
-              />
-            </div>
-            <PrimaryButton 
-              text={loading ? "Loading..." : "Fetch Data"} 
-              onClick={fetchData} 
-              disabled={loading || !startDate || !endDate}
-              className="fetchButton"
-            />
           </div>
-          {error && <Text className="errorMessage">{error}</Text>}
-          {loading && <Text className="loadingMessage">Loading...</Text>}
+
+          {loading && (
+            <div className="loading-text">
+              <FaSpinner style={{ marginRight: '10px', animation: 'spin 1s linear infinite' }} />
+              Loading dashboard data...
+            </div>
+          )}
+
+          {error && (
+            <div className="error-text">
+              <FaExclamationTriangle style={{ marginRight: '10px' }} />
+              {error}
+            </div>
+          )}
+
+          {!loading && !error && (graphs.energy_consumption_graph || graphs.expenditure_graph || graphs.pie_chart) && (
+            <div className="dashboard-result">
+              {graphs.energy_consumption_graph && (
+                <DashboardCard 
+                  title="Yearly Energy Consumption" 
+                  image={graphs.energy_consumption_graph} 
+                  alt="Energy Consumption Graph" 
+                />
+              )}
+              {graphs.expenditure_graph && (
+                <DashboardCard 
+                  title="Yearly Expenditure" 
+                  image={graphs.expenditure_graph} 
+                  alt="Expenditure Graph" 
+                />
+              )}
+              {graphs.pie_chart && (
+                <DashboardCard 
+                  title="Energy Usage Distribution" 
+                  image={graphs.pie_chart} 
+                  alt="Energy Usage Pie Chart" 
+                />
+              )}
+            </div>
+          )}
         </div>
-      </div>
-
-      {/* Scrollable graphs section */}
-      <div className="graphsSection">
-        {!loading && graphs.energy_consumption_graph && (
-          <div className="graphContainer">
-            <h2>Yearly Energy Consumption</h2>
-            <div className="graphWrapper">
-              <img 
-                src={`data:image/png;base64,${graphs.energy_consumption_graph}`} 
-                alt="Energy Consumption"
-                className="graphImage"
-              />
-            </div>
-          </div>
-        )}
-
-        {!loading && graphs.expenditure_graph && (
-          <div className="graphContainer">
-            <h2>Yearly Expenditure</h2>
-            <div className="graphWrapper">
-              <img 
-                src={`data:image/png;base64,${graphs.expenditure_graph}`} 
-                alt="Expenditure"
-                className="graphImage"
-              />
-            </div>
-          </div>
-        )}
-
-        {!loading && graphs.pie_chart && (
-          <div className="graphContainer">
-            <h2>Energy Usage Distribution</h2>
-            <div className="graphWrapper">
-              <img 
-                src={`data:image/png;base64,${graphs.pie_chart}`} 
-                alt="Energy Usage"
-                className="graphImage"
-              />
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );

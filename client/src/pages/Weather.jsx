@@ -1,6 +1,14 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import './Weather.css'; // Importing the external CSS file
+import { FaCloudSun, FaSpinner, FaExclamationTriangle } from 'react-icons/fa';
+import './Weather.css';
+
+const WeatherCard = ({ label, value, unit = '' }) => (
+  <div className="card">
+    <strong>{label}</strong>
+    {value} {unit}
+  </div>
+);
 
 const Weather = () => {
   const [weatherData, setWeatherData] = useState(null);
@@ -9,29 +17,28 @@ const Weather = () => {
   const [date, setDate] = useState('');
 
   const fetchWeatherData = async (selectedDate) => {
+    setIsLoading(true);
+    setError(null);
+
     try {
       const response = await axios.post('http://localhost:5000/weather', {
         date: selectedDate,
       });
       setWeatherData(response.data);
-      setError(null); // Clear previous errors if the call succeeds
     } catch (error) {
       console.error('Error fetching weather data:', error);
-      // Check if the error has a response from the backend
-      if (error.response) {
-        setError(`Backend error: ${error.response.status} - ${error.response.data.error}`);
-      } else {
-        setError('Network Error. Please try again later.');
-      }
+      const errorMessage = error.response 
+        ? `${error.response.status} - ${error.response.data.error}`
+        : 'Network Error. Please try again later.';
+      setError(errorMessage);
     } finally {
-      setIsLoading(false); // Ensure the loading state is reset
+      setIsLoading(false);
     }
   };
 
   const handleSubmit = (event) => {
     event.preventDefault();
     if (date) {
-      setIsLoading(true);
       fetchWeatherData(date);
     } else {
       setError('Please select a valid date.');
@@ -39,47 +46,75 @@ const Weather = () => {
   };
 
   return (
-    <div className="container">
-      <div className="weather-card">
-        <h1>Weather Prediction</h1>
-        <form onSubmit={handleSubmit} className="weather-form">
-          <label htmlFor="date">Select a Date:</label>
-          <input
-            type="date"
-            id="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-          />
-          <button type="submit">Get Weather</button>
-        </form>
+    <div className="container1">
+      <img
+        className="background-image"
+        src="https://images.unsplash.com/photo-1530908295418-4c6c9f2916e3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
+        alt="Weather Forecast Background"
+      />
+      <div className="content-overlay">
+        <div className="weather-card">
+          <h1><FaCloudSun style={{ marginRight: '10px' }} />Weather Forecast</h1>
+          <form onSubmit={handleSubmit} className="weather-form">
+            <label htmlFor="date">Select a Date for Weather Prediction</label>
+            <input
+              type="date"
+              id="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              max={new Date().toISOString().split('T')[0]}
+            />
+            <button type="submit" disabled={isLoading}>
+              {isLoading ? 'Fetching...' : 'Get Weather'}
+            </button>
+          </form>
 
-        {isLoading ? (
-          <p className="loading-text">Loading...</p>
-        ) : error ? (
-          <p className="error-text">{error}</p>
-        ) : weatherData ? (
-          <div className="weather-result">
-            <div className="card">
-              <strong>Temperature: </strong>{weatherData['Temperature (°C)']}°C
+          {isLoading && (
+            <div className="loading-text">
+              <FaSpinner style={{ marginRight: '10px', animation: 'spin 1s linear infinite' }} />
+              Loading weather data...
             </div>
-            <div className="card">
-              <strong>Humidity: </strong>{weatherData['Humidity (%)']}%
+          )}
+
+          {error && (
+            <div className="error-text">
+              <FaExclamationTriangle style={{ marginRight: '10px' }} />
+              {error}
             </div>
-            <div className="card">
-              <strong>Wind Speed: </strong>{weatherData['Wind Speed (km/h)']} km/h
+          )}
+
+          {weatherData && !isLoading && !error && (
+            <div className="weather-result">
+              <WeatherCard 
+                label="Temperature" 
+                value={weatherData['Temperature (°C)']} 
+                unit="°C" 
+              />
+              <WeatherCard 
+                label="Humidity" 
+                value={weatherData['Humidity (%)']} 
+                unit="%" 
+              />
+              <WeatherCard 
+                label="Wind Speed" 
+                value={weatherData['Wind Speed (km/h)']} 
+                unit="km/h" 
+              />
+              <WeatherCard 
+                label="Precipitation" 
+                value={weatherData['Precipitation Probability (%)']} 
+                unit="%" 
+              />
+              <div className="card" style={{ gridColumn: 'span 2', textAlign: 'center' }}>
+                <strong>Weather Conditions</strong>
+                {weatherData['Conditions']}
+              </div>
             </div>
-            <div className="card">
-              <strong>Precipitation Probability: </strong>{weatherData['Precipitation Probability (%)']}%
-            </div>
-            <div className="card">
-              <strong>Conditions: </strong>{weatherData['Conditions']}
-            </div>
-          </div>
-        ) : null}
+          )}
+        </div>
       </div>
     </div>
   );
 };
 
 export default Weather;
-
