@@ -1,12 +1,13 @@
 .home-container {
+  position: absolute !important;
+  left: 350px;
+  width: calc(100vw - 350px);
+  height: 100vh;
   display: flex;
   flex-direction: column;
-  height: 100vh;
-  position: relative;
-  overflow: hidden;
   background-color: #000;
-  margin-left: 240px; /* Account for sidebar */
-  width: calc(100vw - 240px); /* Use viewport width */
+  overflow: hidden;
+  top: 0;
   right: 0;
 }
 
@@ -17,9 +18,10 @@
   position: absolute;
   top: 0;
   left: 0;
-  opacity: 0.8;
+  opacity: 1; /* Full opacity */
   transition: transform 20s ease;
   filter: brightness(0.7) saturate(1.2);
+  z-index: -1;
 }
 
 .home-container:hover .background-image {
@@ -38,13 +40,8 @@
   justify-content: center;
   align-items: center;
   padding: 2rem;
-  background: linear-gradient(
-    to bottom,
-    rgba(0, 0, 0, 0.5) 0%,
-    rgba(0, 0, 0, 0.7) 50%,
-    rgba(0, 0, 0, 0.5) 100%
-  );
-  backdrop-filter: blur(2px);
+  background: transparent; /* Remove gradient */
+  backdrop-filter: none; /* Remove blur */
 }
 
 .title {
@@ -176,7 +173,7 @@
 
 @media (max-width: 768px) {
   .home-container {
-    margin-left: 0;
+    left: 0;
     width: 100%;
   }
 

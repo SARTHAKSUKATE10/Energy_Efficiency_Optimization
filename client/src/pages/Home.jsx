@@ -14,7 +14,7 @@ const Home = () => {
       />
       <div className="content-overlay">
         <h1 className="title">
-          Smart Energy Management
+          Pune Smart Energy Management
         </h1>
         <p className="subtitle">
           Revolutionize your city's energy consumption with AI-powered analytics and real-time optimization. 

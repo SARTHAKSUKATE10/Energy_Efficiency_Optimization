@@ -6,8 +6,8 @@
   min-height: 100vh;
   background-color: #000;
   font-family: 'Arial', sans-serif;
-  margin-left: 240px;
-  width: calc(100vw - 240px);
+  margin-left: 0;
+  width: 100vw;
   position: relative;
   overflow: hidden;
 }
@@ -44,6 +44,9 @@
   margin-bottom: 30px;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
   font-weight: 700;
+  animation: fadeInUp 1s ease-out;
+  opacity: 0;
+  animation-fill-mode: forwards;
 }
 
 /* Styling for the form */
@@ -51,6 +54,10 @@
   display: flex;
   flex-direction: column;
   gap: 25px;
+  animation: fadeInUp 1.2s ease-out;
+  animation-delay: 0.3s;
+  opacity: 0;
+  animation-fill-mode: forwards;
 }
 
 /* Styling for each input group */
@@ -58,6 +65,14 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  transition: all 0.3s ease;
+  will-change: transform, box-shadow;
+}
+
+.input-group:hover {
+  animation: pulse 1s infinite;
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(76, 175, 80, 0.2);
 }
 
 /* Label styling */
@@ -116,11 +131,16 @@
   font-weight: 600;
   letter-spacing: 1px;
   align-self: center;
+  animation: fadeInUp 1.5s ease-out;
+  animation-delay: 0.6s;
+  opacity: 0;
+  animation-fill-mode: forwards;
 }
 
 .submit-button:hover {
   transform: translateY(-2px);
   box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+  animation: pulse 1s infinite;
 }
 
 .submit-button:disabled {
@@ -170,11 +190,21 @@
   }
 }
 
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
 /* Responsive design */
 @media (max-width: 768px) {
   .contact-container {
-    margin-left: 0;
-    width: 100vw;
     padding: 20px;
   }
 

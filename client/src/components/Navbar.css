@@ -1,40 +1,147 @@
 /* General Navbar Styling */
 .navbar {
-  background: #333;
-  color: white;
-  padding: 20px 20px;
   position: fixed;
-  height: 100%;
-  width: 200px; /* Fixed width */
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  z-index: 10;
+  left: 0;
+  top: 0;
+  height: 100vh;
+  width: 240px;
+  background-color: #1a1a1a;
   transition: all 0.3s ease;
+  z-index: 1000;
+  overflow-x: hidden;
+}
+
+.navbar.closed {
+  width: 0;
+  overflow-x: hidden;
 }
 
 .nav-links {
-  padding: 0;
-  list-style-type: none;
-  margin-top: 20px;
+  list-style: none;
+  padding: 20px 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  transition: all 0.3s ease;
+}
+
+.nav-links.closed {
+  opacity: 0;
+  visibility: hidden;
 }
 
 .nav-link {
-  display: block;
-  padding: 15px;
-  margin: 10px 0;
+  color: #fff;
   text-decoration: none;
-  color: white;
-  font-size: 18px;
-  font-weight: 500;
-  border-radius: 5px;
-  text-align: center;
-  transition: background-color 0.3s ease, transform 0.3s ease;
+  padding: 15px 20px;
+  display: block;
+  transition: background-color 0.3s ease;
 }
 
 .nav-link:hover {
-    background-color: #007bff;
-  transform: scale(1.05);
+  background-color: #333;
+}
+
+.navbar-toggle {
+  position: fixed;
+  top: 15px;
+  left: 15px;
+  z-index: 1100;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 24px;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.navbar-toggle:hover {
+  transform: scale(1.1);
+}
+
+.navbar-toggle.closed {
+  left: 15px;
+}
+
+.navbar-toggle.open {
+  left: 250px;
+}
+
+/* Adjust main content when navbar is closed or open */
+.navbar.closed + * {
+  margin-left: 0 !important;
+  width: 100vw !important;
+}
+
+.navbar.open + * {
+  margin-left: 240px !important;
+  width: calc(100vw - 240px) !important;
+}
+
+/* Prevent Home page content from moving */
+.navbar.open + .home-container,
+.navbar.closed + .home-container {
+  position: absolute !important;
+  left: 350px !important;
+  width: calc(100vw - 350px) !important;
+  margin-left: 0 !important;
+  top: 0 !important;
+  height: 100vh !important;
+}
+
+/* Prevent Dashboard content from moving */
+.navbar.open + .dashboardContainer,
+.navbar.closed + .dashboardContainer {
+  position: absolute !important;
+  left: 0 !important;
+  width: 100vw !important;
+  margin-left: 0 !important;
+  top: 0 !important;
+  height: 100vh !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+
+/* Prevent Sector page from moving and ensure center positioning */
+.navbar.open + .sector-container,
+.navbar.closed + .sector-container {
+  position: absolute !important;
+  left: 0 !important;
+  width: 100vw !important;
+  margin-left: 0 !important;
+  top: 0 !important;
+  height: 100vh !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+
+/* Ensure Sector page content remains centered */
+.navbar.open + .sector-container .container1,
+.navbar.closed + .sector-container .container1 {
+  width: 100% !important;
+  max-width: 1200px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  align-items: center !important;
+  height: 100% !important;
+}
+
+/* Prevent Weather page from moving */
+.navbar.open + .weather-container,
+.navbar.closed + .weather-container {
+  position: absolute !important;
+  left: 0 !important;
+  width: 100vw !important;
+  margin-left: 0 !important;
+  top: 0 !important;
+  height: 100vh !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
 }
 
 /* Responsive Design */
@@ -59,7 +166,3 @@
     padding: 10px 15px;
   }
 }
-
-
-
-  
