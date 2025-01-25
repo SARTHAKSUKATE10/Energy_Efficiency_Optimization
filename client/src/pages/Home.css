@@ -1,6 +1,6 @@
 .home-container {
   position: absolute !important;
-  left: 350px;
+  left: 250px;
   width: calc(100vw - 350px);
   height: 100vh;
   display: flex;
