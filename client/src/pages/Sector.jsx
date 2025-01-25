@@ -94,25 +94,18 @@ const Sector = () => {
         </div>
       )}
 
-      {sectorData && !isLoading && !error && (
+      {sectorData && (
         <div className="sector-results">
-          <div className="sector-grid">
-            <SectorCard label="Season" value={sectorData.Season} />
-            <SectorCard label="Solar Energy" value={sectorData['Solar Energy (kWh)']} unit="kWh" />
-            <SectorCard label="Precipitation" value={sectorData['Precipitation (mm)']} unit="mm" />
-            <SectorCard label="Population" value={sectorData.Population} />
-            <SectorCard label="Total Usage" value={sectorData['Total Usage (kWh)']} unit="kWh" />
-            <SectorCard label="Urban Usage" value={sectorData['Urban Usage (kWh)']} unit="kWh" />
-            <SectorCard label="Rural Usage" value={sectorData['Rural Usage (kWh)']} unit="kWh" />
-            <SectorCard label="Urban Household" value={sectorData['Urban Household (kWh)']} unit="kWh" />
-            <SectorCard label="Urban Industrial" value={sectorData['Urban Industrial (kWh)']} unit="kWh" />
-            <SectorCard label="Urban Commercial" value={sectorData['Urban Commercial (kWh)']} unit="kWh" />
-            <SectorCard label="Urban Others" value={sectorData['Urban Others (kWh)']} unit="kWh" />
-            <SectorCard label="Rural Household" value={sectorData['Rural Household (kWh)']} unit="kWh" />
-            <SectorCard label="Rural Industrial" value={sectorData['Rural Industrial (kWh)']} unit="kWh" />
-            <SectorCard label="Rural Commercial" value={sectorData['Rural Commercial (kWh)']} unit="kWh" />
-            <SectorCard label="Rural Others" value={sectorData['Rural Others (kWh)']} unit="kWh" />
-          </div>
+          {Object.entries(sectorData).map(([key, value], index) => (
+            <div 
+              key={key} 
+              className="sector-card" 
+              style={{ '--index': index }}
+            >
+              <div className="sector-card-label">{key}</div>
+              <div className="sector-card-value">{value}</div>
+            </div>
+          ))}
         </div>
       )}
     </div>

@@ -94,53 +94,20 @@ const Weather = () => {
         </div>
       )}
 
-      {weatherData && !isLoading && !error && (
+      {weatherData && (
         <div className="weather-results">
-          <div className="weather-grid">
-            <WeatherCard 
-              label="Temperature" 
-              value={weatherData['Temperature (°C)'].toFixed(1)} 
-              unit="°C" 
-            />
-            <WeatherCard 
-              label="Humidity" 
-              value={weatherData['Humidity (%)'].toFixed(1)} 
-              unit="%" 
-            />
-            <WeatherCard 
-              label="Wind Speed" 
-              value={weatherData['Wind Speed (km/h)'].toFixed(1)} 
-              unit="km/h" 
-            />
-            <WeatherCard 
-              label="Precipitation" 
-              value={weatherData['Precipitation (mm)'].toFixed(1)} 
-              unit="mm" 
-            />
-            <WeatherCard 
-              label="Solar Radiation" 
-              value={weatherData['Solar Radiation (W/m²)'].toFixed(1)} 
-              unit="W/m²" 
-            />
-            <WeatherCard 
-              label="Air Quality Index" 
-              value={weatherData['Air Quality Index'].toFixed(1)} 
-            />
-            <WeatherCard 
-              label="UV Index" 
-              value={weatherData['UV Index'].toFixed(1)} 
-            />
-            <WeatherCard 
-              label="Cloud Cover" 
-              value={weatherData['Cloud Cover (%)'].toFixed(1)} 
-              unit="%" 
-            />
-            <WeatherCard 
-              label="Atmospheric Pressure" 
-              value={weatherData['Atmospheric Pressure (hPa)'].toFixed(1)} 
-              unit="hPa" 
-            />
-          </div>
+          {Object.entries(weatherData).map(([key, value], index) => (
+            <div 
+              key={key} 
+              className="weather-card" 
+              style={{ '--index': index }}
+            >
+              <div className="weather-card-label">{key}</div>
+              <div className="weather-card-value">
+                {typeof value === 'number' ? value.toFixed(1) : value}
+              </div>
+            </div>
+          ))}
         </div>
       )}
     </div>
