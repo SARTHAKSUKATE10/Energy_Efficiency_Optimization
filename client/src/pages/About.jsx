@@ -1,190 +1,130 @@
 import React from "react";
+import { FaLinkedin, FaGithub, FaTwitter } from 'react-icons/fa';
+import './About.css';
 
 const About = () => {
-    return (
-        <div
-            style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                marginLeft: "250px", // Adjust this based on the width of your navbar
-                fontFamily: "Arial, sans-serif",
-            }}
-        >
-            <h1 style={{ textAlign: "center", marginBottom: "30px", marginTop: "40px" }}>
-                Our Team
-            </h1>
+  const teamMembers = [
+    {
+      name: "Sarah Johnson",
+      role: "Lead Energy Analyst",
+      image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1888&q=80",
+      description: "Expert in energy optimization with 8+ years of experience in sustainable solutions.",
+      social: {
+        linkedin: "#",
+        github: "#",
+        twitter: "#"
+      }
+    },
+    {
+      name: "Michael Chen",
+      role: "AI Research Lead",
+      image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1888&q=80",
+      description: "Pioneering AI solutions for energy efficiency and smart grid optimization.",
+      social: {
+        linkedin: "#",
+        github: "#",
+        twitter: "#"
+      }
+    },
+    {
+      name: "Emily Rodriguez",
+      role: "Data Scientist",
+      image: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1887&q=80",
+      description: "Specializing in predictive analytics and energy consumption patterns.",
+      social: {
+        linkedin: "#",
+        github: "#",
+        twitter: "#"
+      }
+    },
+    {
+      name: "David Park",
+      role: "Software Architect",
+      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1887&q=80",
+      description: "Building robust and scalable systems for energy management solutions.",
+      social: {
+        linkedin: "#",
+        github: "#",
+        twitter: "#"
+      }
+    }
+  ];
 
-            {/* First Row: One centered card */}
-            <div
-                style={{
-                    display: "flex",
-                    justifyContent: "center", // Center the card
-                    marginBottom: "30px", // Space between rows
-                    width: "100%", // Ensures the div takes full width for centering
-                }}
-            >
-                <div
-                    style={{
-                        width: "300px",
-                        height: "300px", // Set card height
-                        borderRadius: "10px",
-                        overflow: "hidden",
-                        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
-                        transition: "transform 0.3s, box-shadow 0.3s, z-index 0.3s",
-                    }}
-                    onMouseEnter={(e) => {
-                        e.currentTarget.style.transform = "scale(1.05)";
-                        e.currentTarget.style.boxShadow =
-                            "0 8px 16px rgba(0, 0, 0, 0.3)";
-                        e.currentTarget.style.zIndex = "10"; // Bring the hovered card to the front
-                    }}
-                    onMouseLeave={(e) => {
-                        e.currentTarget.style.transform = "scale(1)";
-                        e.currentTarget.style.boxShadow =
-                            "0 4px 8px rgba(0, 0, 0, 0.2)";
-                        e.currentTarget.style.zIndex = "1"; // Reset z-index after hover
-                    }}
-                >
-                    <img
-                        src="https://img.freepik.com/free-photo/business-finance-employment-female-successful-entrepreneurs-concept-friendly-smiling-office-manager-greeting-new-coworker-businesswoman-welcome-clients-with-hand-wave-hold-laptop_1258-59122.jpg"
-                        alt="Employee 1"
-                        style={{ width: "100%", height: "150px", objectFit: "cover" }}
-                    />
-                    <div style={{ padding: "10px" }}>
-                        <h3 style={{ margin: "0" }}>Employee 1</h3>
-                        <p style={{ fontSize: "14px", color: "#555" }}>
-                            Role: Frontend Developer
-                        </p>
-                    </div>
-                </div>
-            </div>
+  const stats = [
+    {
+      number: "10+",
+      label: "Years Experience"
+    },
+    {
+      number: "500+",
+      label: "Projects Completed"
+    },
+    {
+      number: "30%",
+      label: "Average Energy Savings"
+    },
+    {
+      number: "24/7",
+      label: "Support Available"
+    }
+  ];
 
-            {/* Second Row: Three cards */}
-            <div
-                style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    flexWrap: "wrap",
-                    gap: "30px", // Space between cards
-                    width: "100%", // Make the width a bit smaller to fit three cards
-                    marginLeft: "60px", // Adjust this based on the width of the first card
-                    marginTop: "20px", // Space between rows
-                    marginBottom: "30px", // Space between rows
-                }}
-            >
-                {/* Card 2 */}
-                <div
-                    style={{
-                        width: "300px", // Card width
-                        height: "300px",
-                        borderRadius: "10px",
-                        overflow: "hidden",
-                        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
-                        transition: "transform 0.3s, box-shadow 0.3s, z-index 0.3s",
-                    }}
-                    onMouseEnter={(e) => {
-                        e.currentTarget.style.transform = "scale(1.05)";
-                        e.currentTarget.style.boxShadow =
-                            "0 8px 16px rgba(0, 0, 0, 0.3)";
-                        e.currentTarget.style.zIndex = "10"; // Bring the hovered card to the front
-                    }}
-                    onMouseLeave={(e) => {
-                        e.currentTarget.style.transform = "scale(1)";
-                        e.currentTarget.style.boxShadow =
-                            "0 4px 8px rgba(0, 0, 0, 0.2)";
-                        e.currentTarget.style.zIndex = "1"; // Reset z-index after hover
-                    }}
-                >
-                    <img
-                        src="https://img.freepik.com/free-photo/business-finance-employment-female-successful-entrepreneurs-concept-friendly-smiling-office-manager-greeting-new-coworker-businesswoman-welcome-clients-with-hand-wave-hold-laptop_1258-59122.jpg"
-                        alt="Employee 2"
-                        style={{ width: "100%", height: "150px", objectFit: "cover" }}
-                    />
-                    <div style={{ padding: "10px" }}>
-                        <h3 style={{ margin: "0" }}>Employee 2</h3>
-                        <p style={{ fontSize: "14px", color: "#555" }}>
-                            Role: Backend Developer
-                        </p>
-                    </div>
-                </div>
-
-                {/* Card 3 */}
-                <div
-                    style={{
-                        width: "300px", // Card width
-                        height: "300px",
-                        borderRadius: "10px",
-                        overflow: "hidden",
-                        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
-                        transition: "transform 0.3s, box-shadow 0.3s, z-index 0.3s",
-                    }}
-                    onMouseEnter={(e) => {
-                        e.currentTarget.style.transform = "scale(1.05)";
-                        e.currentTarget.style.boxShadow =
-                            "0 8px 16px rgba(0, 0, 0, 0.3)";
-                        e.currentTarget.style.zIndex = "10"; // Bring the hovered card to the front
-                    }}
-                    onMouseLeave={(e) => {
-                        e.currentTarget.style.transform = "scale(1)";
-                        e.currentTarget.style.boxShadow =
-                            "0 4px 8px rgba(0, 0, 0, 0.2)";
-                        e.currentTarget.style.zIndex = "1"; // Reset z-index after hover
-                    }}
-                >
-                    <img
-                        src="https://img.freepik.com/free-photo/business-finance-employment-female-successful-entrepreneurs-concept-friendly-smiling-office-manager-greeting-new-coworker-businesswoman-welcome-clients-with-hand-wave-hold-laptop_1258-59122.jpg"
-                        alt="Employee 3"
-                        style={{ width: "100%", height: "150px", objectFit: "cover" }}
-                    />
-                    <div style={{ padding: "10px" }}>
-                        <h3 style={{ margin: "0" }}>Employee 3</h3>
-                        <p style={{ fontSize: "14px", color: "#555" }}>
-                            Role: UI/UX Designer
-                        </p>
-                    </div>
-                </div>
-
-                {/* Card 4 */}
-                <div
-                    style={{
-                        width: "300px", // Card width
-                        height: "300px",
-                        borderRadius: "10px",
-                        overflow: "hidden",
-                        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
-                        transition: "transform 0.3s, box-shadow 0.3s, z-index 0.3s",
-                    }}
-                    onMouseEnter={(e) => {
-                        e.currentTarget.style.transform = "scale(1.05)";
-                        e.currentTarget.style.boxShadow =
-                            "0 8px 16px rgba(0, 0, 0, 0.3)";
-                        e.currentTarget.style.zIndex = "10"; // Bring the hovered card to the front
-                    }}
-                    onMouseLeave={(e) => {
-                        e.currentTarget.style.transform = "scale(1)";
-                        e.currentTarget.style.boxShadow =
-                            "0 4px 8px rgba(0, 0, 0, 0.2)";
-                        e.currentTarget.style.zIndex = "1"; // Reset z-index after hover
-                    }}
-                >
-                    <img
-                        src="https://img.freepik.com/free-photo/business-finance-employment-female-successful-entrepreneurs-concept-friendly-smiling-office-manager-greeting-new-coworker-businesswoman-welcome-clients-with-hand-wave-hold-laptop_1258-59122.jpg"
-                        alt="Employee 4"
-                        style={{ width: "100%", height: "150px", objectFit: "cover" }}
-                    />
-                    <div style={{ padding: "10px" }}>
-                        <h3 style={{ margin: "0" }}>Employee 4</h3>
-                        <p style={{ fontSize: "14px", color: "#555" }}>
-                            Role: Project Manager
-                        </p>
-                    </div>
-                </div>
-            </div>
+  return (
+    <div className="about-container">
+      <img
+        className="about-background"
+        src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2072&q=80"
+        alt="City Background"
+      />
+      
+      <div className="about-content">
+        <div className="about-header">
+          <h1 className="about-title">Meet Our Team</h1>
+          <p className="about-subtitle">
+            We're a diverse team of experts dedicated to revolutionizing energy efficiency through
+            innovative AI solutions and data-driven strategies.
+          </p>
         </div>
-    );
+
+        <div className="team-grid">
+          {teamMembers.map((member, index) => (
+            <div key={index} className="team-card">
+              <img
+                src={member.image}
+                alt={member.name}
+                className="card-image"
+              />
+              <div className="card-content">
+                <h3 className="member-name">{member.name}</h3>
+                <p className="member-role">{member.role}</p>
+                <p className="member-description">{member.description}</p>
+                <div className="social-links">
+                  <a href={member.social.linkedin} className="social-link">
+                    <FaLinkedin />
+                  </a>
+                  <a href={member.social.github} className="social-link">
+                    <FaGithub />
+                  </a>
+                  <a href={member.social.twitter} className="social-link">
+                    <FaTwitter />
+                  </a>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="stats-section">
+          {stats.map((stat, index) => (
+            <div key={index} className="stat-card">
+              <div className="stat-number">{stat.number}</div>
+              <div className="stat-label">{stat.label}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default About;
-
-

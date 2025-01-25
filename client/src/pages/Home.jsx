@@ -1,57 +1,50 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import './Home.css';
 
-const Home = ({ isMenuVisible }) => {
+const Home = () => {
+  const navigate = useNavigate();
+
   return (
-    <div
-      style={{
-        flex: isMenuVisible ? '0.7' : '0.85',
-        display: 'flex',
-        flexDirection: 'column', // Stack text on top of image
-        justifyContent: 'center',
-        alignItems: 'center',
-        transition: 'flex 0.3s ease',
-        position: 'relative', // Enable absolute positioning for text
-        height: '100vh', // Ensure it takes up full viewport height
-        width: '100%', // Ensure it takes up full viewport width
-        marginLeftL: '80vh',
-        
-      }}
-    >
+    <div className="home-container">
       <img
-        src="https://images.pexels.com/photos/414807/pexels-photo-414807.jpeg"
-        alt="Scenic View"
-        style={{
-          objectFit: 'cover',
-          width: '130%',
-          height: '100%',
-          position: 'absolute', // Make image fill the container
-          top: 0,
-          left: 0,
-          zIndex: -1, // Place image behind text content
-        }}
+        className="background-image"
+        src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2072&q=80"
+        alt="Smart City Energy"
       />
-
-      <div
-        style={{
-          zIndex: 1,
-          position: 'relative', // Ensures text is on top of image
-          color: 'orange',
-          textAlign: 'center', // Center text horizontally
-          padding: '20px', // Add some padding for better visibility
-          marginLeft: '20%', // Center text vertically
-          paddingTop: '-15%',
-        }}
-      >
-        <h1 style={{ fontSize: '36px', fontWeight: 'bold' }}>
-          Powering Smarter Cities: Energy Efficiency and Optimization Solutions
+      <div className="content-overlay">
+        <h1 className="title">
+          Smart Energy Management
         </h1>
-        <p style={{ fontSize: '18px', marginTop: '10px' }}>
-          Unlocking sustainable energy solutions for a greener urban future.
+        <p className="subtitle">
+          Revolutionize your city's energy consumption with AI-powered analytics and real-time optimization. 
+          Our platform helps you reduce costs, improve efficiency, and build a sustainable future.
         </p>
+        
+        <div className="stats-container">
+          <div className="stat-card">
+            <div className="stat-number">30%</div>
+            <div className="stat-label">Energy Savings</div>
+          </div>
+          <div className="stat-card">
+            <div className="stat-number">24/7</div>
+            <div className="stat-label">Monitoring</div>
+          </div>
+          <div className="stat-card">
+            <div className="stat-number">100+</div>
+            <div className="stat-label">Cities</div>
+          </div>
+        </div>
+
+        <button 
+          className="cta-button"
+          onClick={() => navigate('/dashboard')}
+        >
+          Explore Dashboard
+        </button>
       </div>
     </div>
   );
 };
 
 export default Home;
-
