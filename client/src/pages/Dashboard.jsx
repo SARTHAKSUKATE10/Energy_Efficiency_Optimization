@@ -1,29 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { Stack, Text, PrimaryButton, mergeStyleSets } from '@fluentui/react';
-
-const styles = mergeStyleSets({
-  container: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: '50px',
-  },
-  chartContainer: {
-    margin: '20px',
-    textAlign: 'center',
-  },
-  image: {
-    width: '80%',
-    maxWidth: '600px',
-    height: 'auto',
-    marginBottom: '20px',
-  },
-  inputContainer: {
-    marginBottom: '20px',
-  },
-});
+import { PrimaryButton, Text } from '@fluentui/react';
+import './Dashboard.css';
 
 const Dashboard = () => {
   const [startDate, setStartDate] = useState('');
@@ -34,6 +12,7 @@ const Dashboard = () => {
     pie_chart: ''
   });
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleDateChange = (event, setter) => {
     setter(event.target.value);
@@ -45,84 +24,75 @@ const Dashboard = () => {
       return;
     }
 
+    setLoading(true);
+    setError('');
+
     try {
       const response = await axios.post('http://localhost:5000/dashboard', {
         start_date: startDate,
-        end_date: endDate,
+        end_date: endDate
       });
 
-      if (response.data.error) {
-        setError(response.data.error);
-        setGraphs({ energy_consumption_graph: '', expenditure_graph: '', pie_chart: '' });
-      } else {
-        setGraphs({
-          energy_consumption_graph: response.data.energy_consumption_graph,
-          expenditure_graph: response.data.expenditure_graph,
-          pie_chart: response.data.pie_chart
-        });
-        setError('');
-      }
+      setGraphs({
+        energy_consumption_graph: response.data.energy_consumption_graph,
+        expenditure_graph: response.data.expenditure_graph,
+        pie_chart: response.data.pie_chart
+      });
+
     } catch (err) {
-      setError('An error occurred while fetching data.');
+      setError('Error fetching data. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className={styles.container}>
-      <div className={styles.inputContainer}>
-        <label htmlFor="startDate">Start Date: </label>
-        <input
-          type="date"
-          id="startDate"
-          value={startDate}
-          onChange={(e) => handleDateChange(e, setStartDate)}
-        />
-        <label htmlFor="endDate">End Date: </label>
-        <input
-          type="date"
-          id="endDate"
-          value={endDate}
-          onChange={(e) => handleDateChange(e, setEndDate)}
-        />
-        <PrimaryButton text="Fetch Data" onClick={fetchData} />
+    <div className="dashboard">
+      <h2>Energy Sector Data Dashboard</h2>
+      <div className="form">
+        <label>
+          Start Date:
+          <input
+            type="date"
+            value={startDate}
+            onChange={(event) => handleDateChange(event, setStartDate)}
+          />
+        </label>
+        <label>
+          End Date:
+          <input
+            type="date"
+            value={endDate}
+            onChange={(event) => handleDateChange(event, setEndDate)}
+          />
+        </label>
+        <PrimaryButton text="Fetch Data" onClick={fetchData} disabled={loading} />
       </div>
 
-      {error && <Text variant="large" style={{ color: 'red' }}>{error}</Text>}
+      {error && <Text variant="xLarge">{error}</Text>}
 
-      <div className={styles.chartContainer}>
-        {graphs.energy_consumption_graph && (
-          <div>
-            <h3>Yearly Energy Consumption</h3>
-            <img
-              src={`data:image/png;base64,${graphs.energy_consumption_graph}`}
-              alt="Yearly Energy Consumption"
-              className={styles.image}
-            />
-          </div>
-        )}
+      {loading && <Text>Loading...</Text>}
 
-        {graphs.expenditure_graph && (
-          <div>
-            <h3>Yearly Expenditure</h3>
-            <img
-              src={`data:image/png;base64,${graphs.expenditure_graph}`}
-              alt="Yearly Expenditure"
-              className={styles.image}
-            />
-          </div>
-        )}
+      {!loading && graphs.energy_consumption_graph && (
+        <div>
+          <h3>Yearly Energy Consumption</h3>
+          <img src={`data:image/png;base64,${graphs.energy_consumption_graph}`} alt="Energy Consumption" />
+        </div>
+      )}
 
-        {graphs.pie_chart && (
-          <div>
-            <h3>Energy Usage Distribution</h3>
-            <img
-              src={`data:image/png;base64,${graphs.pie_chart}`}
-              alt="Energy Usage Distribution"
-              className={styles.image}
-            />
-          </div>
-        )}
-      </div>
+      {!loading && graphs.expenditure_graph && (
+        <div>
+          <h3>Yearly Expenditure</h3>
+          <img src={`data:image/png;base64,${graphs.expenditure_graph}`} alt="Expenditure" />
+        </div>
+      )}
+
+      {!loading && graphs.pie_chart && (
+        <div>
+          <h3>Energy Usage Distribution</h3>
+          <img src={`data:image/png;base64,${graphs.pie_chart}`} alt="Energy Usage" />
+        </div>
+      )}
     </div>
   );
 };

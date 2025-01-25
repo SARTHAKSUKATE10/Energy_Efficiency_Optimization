@@ -66,7 +66,6 @@ def predict_weather():
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-        
 
 @app.route('/sector', methods=['POST'])
 def get_sector_data():
@@ -206,5 +205,4 @@ def dashboard():
 # Run the Flask application
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
-
 

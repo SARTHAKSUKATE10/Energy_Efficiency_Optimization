@@ -1,0 +1,75 @@
+.dashboardWrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 40px 20px;
+    background-color: #f4f7f6;
+    margin-left: 30%;
+  }
+  
+  .inputSection {
+    display: flex;
+    flex-direction: row; /* Change to row to align items in one line */
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 30px;
+  }
+  
+  .dateInput {
+    margin: 10px;
+    padding: 12px;
+    font-size: 18px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    width: 220px;
+  }
+  
+  .submitButton {
+    margin-left: 20px; /* Space between date inputs and button */
+    padding: 10px 20px;
+    background-color: #0078d4;
+    color: white;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .submitButton:hover {
+    background-color: #005a9e;
+  }
+  
+  .chartWrapper {
+    margin-top: 50px;
+    width: 80%;
+    text-align: center;
+  }
+  
+  .chartTitle {
+    font-size: 28px;
+    color: #333;
+    margin-bottom: 15px;
+  }
+  
+  .chartImage {
+    width: 100%;
+    max-width: 650px;
+    height: auto;
+    border-radius: 10px;
+  }
+  
+  .errorMessage {
+    color: #d9534f;
+    font-size: 18px;
+    margin-top: 15px;
+    font-weight: bold;
+  }
+  
+  .errorMessage p {
+    margin: 0;
+  }
+  
+  
+  
