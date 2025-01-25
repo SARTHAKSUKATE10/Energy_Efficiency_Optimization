@@ -1,3 +1,5 @@
+import matplotlib
+matplotlib.use('Agg')
 from flask import Flask, request, jsonify
 import joblib
 import pandas as pd
@@ -5,7 +7,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import io
 import base64
-from flask_cors import CORS  # Add CORS support
+from flask_cors import CORS
+import os
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -13,18 +16,33 @@ app = Flask(__name__)
 # Enable CORS to allow communication between different origins (React on 3000, Flask on 5000)
 CORS(app)
 
-# Load the trained model and scaler for sector data
-model = joblib.load('random_forest_model.pkl')
-scaler = joblib.load('scaler.pkl')
-le_conditions = joblib.load('label_encoder.pkl')  # Label encoder for conditions
+# Get the absolute path to the project root directory
+PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 
-# Load the trained model and scaler for sector data
-model_sector = joblib.load('random_forest_model1.pkl')
-scaler_sector = joblib.load('scaler1.pkl')
-le_conditions_sector = joblib.load('label_encoder1.pkl')  # Label encoder for sector conditions
+try:
+    # Load the trained model and scaler for sector data
+    model = joblib.load(os.path.join(PROJECT_ROOT, 'backend', 'random_forest_model.pkl'))
+    scaler = joblib.load(os.path.join(PROJECT_ROOT, 'backend', 'scaler.pkl'))
+    le_conditions = joblib.load(os.path.join(PROJECT_ROOT, 'backend', 'label_encoder.pkl'))
 
-# Load the sector dataset
-df = pd.read_csv('C:\\Users\\VRUTTIK MORAGHA\\Desktop\\App\\Energy_Efficiency_Optimization\\Datasets\\sectorWise1-1-18 to 31-12-19.csv', parse_dates=['Date'])
+    # Load the trained model and scaler for sector data
+    model_sector = joblib.load(os.path.join(PROJECT_ROOT, 'backend', 'random_forest_model1.pkl'))
+    scaler_sector = joblib.load(os.path.join(PROJECT_ROOT, 'backend', 'scaler1.pkl'))
+    le_conditions_sector = joblib.load(os.path.join(PROJECT_ROOT, 'backend', 'label_encoder1.pkl'))
+
+    # Load the sector dataset
+    dataset_path = os.path.join(PROJECT_ROOT, 'Datasets', 'sectorWise1-1-18 to 31-12-19.csv')
+    print(f"Loading dataset from: {dataset_path}")
+    if not os.path.exists(dataset_path):
+        raise FileNotFoundError(f"Dataset file not found at: {dataset_path}")
+    
+    df = pd.read_csv(dataset_path)
+    df['Date'] = pd.to_datetime(df['Date'])
+    print(f"Dataset loaded successfully. Shape: {df.shape}")
+    print(f"Columns: {df.columns.tolist()}")
+except Exception as e:
+    print(f"Error during initialization: {str(e)}")
+    raise
 
 @app.route('/')
 def home():
@@ -107,90 +125,138 @@ def get_sector_data():
 
 # Function to generate line graph for Yearly Energy Consumption
 def generate_yearly_energy_consumption_graph(filtered_data):
-    # Group data by year
-    filtered_data['Year'] = pd.to_datetime(filtered_data['Date']).dt.year
-    yearly_data = filtered_data.groupby('Year').agg({
-        'Total Usage (kWh)': 'sum'
-    }).reset_index()
-
-    # Plot the line graph for Energy Consumption
-    fig, ax = plt.subplots(figsize=(10, 6))
-    ax.plot(yearly_data['Year'], yearly_data['Total Usage (kWh)'], label='Yearly Energy Consumption (kWh)', color='blue', marker='o')
-    ax.set_xlabel('Year')
-    ax.set_ylabel('kWh')
-    ax.set_title('Yearly Energy Consumption')
-    ax.legend()
-
-    # Save the plot as an image
-    img = io.BytesIO()
-    plt.savefig(img, format='png')
-    img.seek(0)
-    img_base64 = base64.b64encode(img.getvalue()).decode('utf-8')
-
-    return img_base64
+    try:
+        plt.figure(figsize=(10, 5))  
+        plt.subplots_adjust(bottom=0.2, left=0.1, right=0.95, top=0.9)  
+        
+        # Sample the data to reduce overlapping points
+        sampled_data = filtered_data.iloc[::7]  
+        
+        plt.plot(sampled_data['Date'], sampled_data['Total Usage (kWh)'], 
+                marker='o', color='#2196F3', label='Total', linewidth=2, 
+                markersize=5, markevery=2)  
+        plt.plot(sampled_data['Date'], sampled_data['Urban Usage (kWh)'], 
+                marker='s', color='#4CAF50', label='Urban', linewidth=2, 
+                markersize=5, markevery=2)
+        plt.plot(sampled_data['Date'], sampled_data['Rural Usage (kWh)'], 
+                marker='^', color='#FFC107', label='Rural', linewidth=2, 
+                markersize=5, markevery=2)
+        
+        plt.title('Yearly Energy Consumption Trends', fontsize=12, pad=20)  
+        plt.xlabel('Date', fontsize=10, labelpad=10)
+        plt.ylabel('Energy Consumption (kWh)', fontsize=10, labelpad=10)
+        plt.grid(True, linestyle='--', alpha=0.7)
+        plt.legend(fontsize=9, bbox_to_anchor=(0.5, -0.15), loc='upper center', ncol=3)
+        plt.xticks(rotation=45, ha='right', fontsize=9)
+        plt.yticks(fontsize=9)
+        
+        buf = io.BytesIO()
+        plt.savefig(buf, format='png', dpi=300, bbox_inches='tight')
+        buf.seek(0)
+        plt.close()
+        
+        return base64.b64encode(buf.getvalue()).decode('utf-8')
+    except Exception as e:
+        print(f"Error in generate_yearly_energy_consumption_graph: {str(e)}")
+        raise
 
 # Function to generate line graph for Yearly Expenditure
 def generate_yearly_expenditure_graph(filtered_data):
-    # Group data by year
-    filtered_data['Year'] = pd.to_datetime(filtered_data['Date']).dt.year
-    yearly_data = filtered_data.groupby('Year').agg({
-        'Total Usage (kWh)': 'sum'
-    }).reset_index()
-
-    # Plot the line graph for Expenditure
-    fig, ax = plt.subplots(figsize=(10, 6))
-    ax.plot(yearly_data['Year'], yearly_data['Total Usage (kWh)'] * 0.1, label='Yearly Expenditure', color='red', marker='o')
-    ax.set_xlabel('Year')
-    ax.set_ylabel('Expenditure (in USD)')
-    ax.set_title('Yearly Expenditure (Estimated)')
-    ax.legend()
-
-    # Save the plot as an image
-    img = io.BytesIO()
-    plt.savefig(img, format='png')
-    img.seek(0)
-    img_base64 = base64.b64encode(img.getvalue()).decode('utf-8')
-
-    return img_base64
+    try:
+        plt.figure(figsize=(10, 5))  
+        plt.subplots_adjust(bottom=0.2, left=0.1, right=0.95, top=0.9)
+        
+        plt.plot(filtered_data['Date'], filtered_data['Total Usage (kWh)'], 
+                marker='o', color='#2196F3', linewidth=2, markersize=5, markevery=2)
+        
+        plt.title('Yearly Energy Expenditure', fontsize=12, pad=20)
+        plt.xlabel('Date', fontsize=10, labelpad=10)
+        plt.ylabel('Expenditure', fontsize=10, labelpad=10)
+        plt.grid(True, linestyle='--', alpha=0.7)
+        plt.xticks(rotation=45, ha='right', fontsize=9)
+        plt.yticks(fontsize=9)
+        
+        buf = io.BytesIO()
+        plt.savefig(buf, format='png', dpi=300, bbox_inches='tight')
+        buf.seek(0)
+        plt.close()
+        
+        return base64.b64encode(buf.getvalue()).decode('utf-8')
+    except Exception as e:
+        print(f"Error in generate_yearly_expenditure_graph: {str(e)}")
+        raise
 
 # Function to generate pie chart for Energy Usage Distribution
 def generate_pie_chart(filtered_data):
-    # Group data by urban/rural usage
-    grouped_data = filtered_data.groupby(['Urban/Rural']).agg({
-        'Total Usage (kWh)': 'sum'
-    }).reset_index()
-
-    # Generate pie chart
-    fig, ax = plt.subplots(figsize=(6, 6))
-    ax.pie(grouped_data['Total Usage (kWh)'], labels=grouped_data['Urban/Rural'], autopct='%1.1f%%', colors=['#ff9999','#66b3ff','#99ff99','#ffcc99'])
-    ax.set_title('Energy Usage Distribution: Urban vs Rural')
-
-    # Save the plot as an image
-    img = io.BytesIO()
-    plt.savefig(img, format='png')
-    img.seek(0)
-    img_base64 = base64.b64encode(img.getvalue()).decode('utf-8')
-
-    return img_base64
+    try:
+        plt.figure(figsize=(7, 4))  
+        
+        # Calculate averages for the pie chart
+        urban_total = filtered_data['Urban Usage (kWh)'].mean()
+        rural_total = filtered_data['Rural Usage (kWh)'].mean()
+        
+        # Data for pie chart
+        sizes = [urban_total, rural_total]
+        labels = ['Urban', 'Rural']
+        colors = ['#4CAF50', '#FFC107']
+        
+        plt.pie(sizes, labels=labels, colors=colors, autopct='%1.1f%%', 
+                startangle=90, textprops={'fontsize': 9})
+        plt.title('Energy Usage Distribution', fontsize=12, pad=20)
+        
+        buf = io.BytesIO()
+        plt.savefig(buf, format='png', dpi=300, bbox_inches='tight')
+        buf.seek(0)
+        plt.close()
+        
+        return base64.b64encode(buf.getvalue()).decode('utf-8')
+    except Exception as e:
+        print(f"Error in generate_pie_chart: {str(e)}")
+        raise
 
 @app.route('/dashboard', methods=['POST'])
 def dashboard():
     try:
         # Get data from frontend
         data = request.get_json()
+        print(f"Received data: {data}")  # Debug log
+        
         start_date = pd.to_datetime(data['start_date'])
         end_date = pd.to_datetime(data['end_date'])
+        
+        print(f"Parsed dates - Start: {start_date}, End: {end_date}")  # Debug log
+        print(f"DataFrame shape: {df.shape}")  # Debug log
+        print(f"DataFrame columns: {df.columns}")  # Debug log
 
         # Filter the data based on the date range
         filtered_data = df[(df['Date'] >= start_date) & (df['Date'] <= end_date)]
+        print(f"Filtered data shape: {filtered_data.shape}")  # Debug log
 
         if filtered_data.empty:
+            print("No data found for the selected date range")  # Debug log
             return jsonify({'error': 'No data found for the selected date range.'}), 404
 
         # Generate graphs
-        energy_consumption_graph = generate_yearly_energy_consumption_graph(filtered_data)
-        expenditure_graph = generate_yearly_expenditure_graph(filtered_data)
-        pie_chart = generate_pie_chart(filtered_data)
+        try:
+            energy_consumption_graph = generate_yearly_energy_consumption_graph(filtered_data)
+            print("Generated energy consumption graph")  # Debug log
+        except Exception as e:
+            print(f"Error generating energy consumption graph: {str(e)}")
+            return jsonify({'error': f'Error generating energy consumption graph: {str(e)}'}), 500
+
+        try:
+            expenditure_graph = generate_yearly_expenditure_graph(filtered_data)
+            print("Generated expenditure graph")  # Debug log
+        except Exception as e:
+            print(f"Error generating expenditure graph: {str(e)}")
+            return jsonify({'error': f'Error generating expenditure graph: {str(e)}'}), 500
+
+        try:
+            pie_chart = generate_pie_chart(filtered_data)
+            print("Generated pie chart")  # Debug log
+        except Exception as e:
+            print(f"Error generating pie chart: {str(e)}")
+            return jsonify({'error': f'Error generating pie chart: {str(e)}'}), 500
 
         # Return graphs in base64 encoding
         return jsonify({
@@ -199,10 +265,12 @@ def dashboard():
             'pie_chart': pie_chart
         })
     except Exception as e:
+        print(f"Dashboard error: {str(e)}")  # Debug log
+        import traceback
+        print(f"Full traceback: {traceback.format_exc()}")  # Detailed error log
         return jsonify({'error': f'Error: {str(e)}'}), 500
 
 
 # Run the Flask application
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
-
