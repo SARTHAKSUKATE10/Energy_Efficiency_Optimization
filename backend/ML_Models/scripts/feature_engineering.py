@@ -1,56 +1,29 @@
 import pandas as pd
-import numpy as np
-from sklearn.preprocessing import StandardScaler
-import joblib
+from sklearn.preprocessing import LabelEncoder
 
-# ✅ Load Dataset
-df = pd.read_csv("../data/sectorwise_final.csv")
+def feature_engineering(file_path):
+    df = pd.read_csv(file_path)
 
-# ✅ Convert Date Column to Datetime
-if 'date' in df.columns:
-    df['date'] = pd.to_datetime(df['date'], errors='coerce')  # Convert to datetime
-    df['month'] = df['date'].dt.month
-    df['year'] = df['date'].dt.year
+    # Identify categorical columns and encode them
+    categorical_cols = df.select_dtypes(include=['object']).columns.tolist()
+    label_encoders = {}
+    
+    for col in categorical_cols:
+        le = LabelEncoder()
+        df[col] = le.fit_transform(df[col])
+        label_encoders[col] = le  # Store encoders if needed later
 
-# ✅ Define Target Variables
-target_columns = ["Urban Usage (kWh)", "Rural Usage (kWh)"]
-# Remove non-numeric columns
-feature_columns = df.select_dtypes(include=[np.number]).columns.tolist()
+    # Create the target column but DO NOT include it in features
+    df['Total Energy (kWh)'] = df['Urban Usage (kWh)'] + df['Rural Usage (kWh)']
+    df.drop(columns=['Total Energy (kWh)'], inplace=True)  # Remove to prevent leakage
 
-# ✅ Exclude Target Columns from Features
-feature_columns = [col for col in feature_columns if col not in target_columns]
+    # Save feature-engineered dataset
+    df.to_csv("../data/features.csv", index=False)
 
-# ✅ Normalize Features
-scaler = StandardScaler()
-df[feature_columns] = scaler.fit_transform(df[feature_columns])
+    print("Feature engineering completed! Data saved.")
 
-# Save the scaler for inference
-joblib.dump(scaler, "../models/scaler.pkl")
+    return df
 
-# ✅ Create Sequences for LSTM (Time Series)
-timesteps = 10  # Use past 10 days for prediction
-
-def create_sequences(X, y, timesteps):
-    """
-    Convert data into sequences of past `timesteps` for time series modeling.
-    """
-    Xs, ys = [], []
-    for i in range(len(X) - timesteps):
-        Xs.append(X[i : i + timesteps])
-        ys.append(y.iloc[i + timesteps])
-    return np.array(Xs), np.array(ys)
-
-# Process each target separately
-processed_data = {}
-for target in target_columns:
-    X = df[feature_columns].values
-    y = df[target]
-
-    X_seq, y_seq = create_sequences(X, y, timesteps)
-    processed_data[target] = (X_seq, y_seq)
-
-    # Save processed data
-    np.save(f"../data/X_{target.replace(' ', '_')}.npy", X_seq)
-    np.save(f"../data/y_{target.replace(' ', '_')}.npy", y_seq)
-
-print("✅ Feature Engineering Done! Saved sector-wise sequences.")
+if __name__ == "__main__":
+    file_path = "../data/processed_data.csv"
+    feature_engineering(file_path)

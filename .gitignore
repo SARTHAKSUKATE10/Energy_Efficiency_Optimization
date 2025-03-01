@@ -1,0 +1,23 @@
+# ==== Environment Files ====
+venv/Lib/
+venv/Scripts/
+venv/share/
+venv/Include/
+
+
+# ==== Backend Ignore ====
+backend/__pycache__/
+backend/*.log
+backend/node_modules/
+
+# ==== Frontend Ignore ====
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+frontend/.next/
+frontend/*.log
+
+# ==== Global Ignore ====
+*.log
+.DS_Store
+.vscode/
